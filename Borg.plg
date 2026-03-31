@@ -1,0 +1,100 @@
+<?xml version='1.0' standalone='yes'?>
+<!DOCTYPE PLUGIN [
+<!ENTITY name      "borg">
+<!ENTITY author    "x-radeon">
+<!ENTITY version   "1.4.4">
+<!ENTITY sha256    "d48d3a31cf1f6fb781fe240945e0b1c246093d3b94b56ce8f501d46a8615f4de">
+<!ENTITY launch    "Settings/&name;">
+<!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
+<!ENTITY plugin    "/boot/config/plugins/&name;">
+<!ENTITY pluginURL "https://raw.githubusercontent.com/x-radeon/unraid-borg/main/Borg.plg">
+]>
+
+<PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" min="7.2.0" support="tbd">
+
+<CHANGES>
+###2026-03-31
+- Init Push
+- Borg Version 1.4.4 (https://github.com/borgbackup/borg/releases/tag/1.4.4)
+
+</CHANGES>
+
+<FILE Run="/bin/bash">
+<INLINE>
+# 
+# Set up variables
+# 
+checksumverified=false
+pluginDir=&plugin;
+borgVersion=&version;
+thisSHA256=&sha256;
+
+# 
+# Set up variables
+# 
+borgDownloadFilename="borg-linux-glibc235-x86_64-gh"
+borgDownloadPath="${pluginDir}/${borgDownloadFilename}"
+borgDownloadBase="https://github.com/borgbackup/borg/releases/download/${borgVersion}"
+borgDownloadURL="${borgDownloadBase}/${borgDownloadFilename}"
+borgDownloadOutputSHA256="${thisSHA256}  ${borgDownloadPath}"
+borgInstallDir="/usr/local/bin"
+borgExecutable="${borgInstallDir}/borg"
+borgExecutableBin="/usr/local/bin/borg"
+
+echo "Removing Old Install"
+rm -rf "$borgExecutableBin"
+find "${pluginDir}" -type f -regex 'borg-linux-glibc235-x86_64-gh' ! -iname $borgDownloadFilename -delete
+
+echo "Creating Directories (if they don't exist)"
+mkdir -p "${borgInstallDir}" "${pluginDir}"
+
+if echo "$borgDownloadOutputSHA256" | sha256sum -c; then
+  echo "Using already downloaded file"
+  checksumverified=true
+else
+  echo "Need to download Borg. Downloading Source $borgDownloadURL"
+  curl -L -o $borgDownloadPath $borgDownloadURL
+  if echo "$borgDownloadOutputSHA256" | sha256sum -c ; then checksumverified=true ; fi
+fi
+
+if [ $checksumverified == true ] ; then
+  echo "Copying File to bin folder"
+  cp $borgDownloadPath $borgInstallDir/borg
+  echo "Set execute permissions"
+  chmod 755 $borgExecutableBin
+  echo "Set ownership"
+  chown root:root $borgExecutableBin
+  echo "Finished Install"
+else
+  echo "${borgDownloadPath}"
+  echo "Failed to verify checksum!!!"
+fi
+</INLINE>
+</FILE>
+
+<FILE Name="&plugdir;/README.md">
+<INLINE>
+**Borg**
+
+This Plugin allows you to install borg to be used locally on Unraid instead of through docker or VM.
+</INLINE>
+</FILE>
+
+<FILE Run="/bin/bash" Method="remove">
+<INLINE>
+echo "------------------------------------"
+echo "---Uninstalling Borg plugin---"
+echo "------------------------------------"
+echo
+# Remove plugin related files
+rm -rf $borgExecutableBin
+rm -rf &plugin;
+rm -rf &plugdir;
+echo
+echo "--------------------------------------------------------"
+echo "--------------Borg uninstalled--------------------"
+echo "--------------------------------------------------------"
+echo
+</INLINE>
+</FILE>
+</PLUGIN>
