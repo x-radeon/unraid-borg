@@ -2,8 +2,8 @@
 <!DOCTYPE PLUGIN [
 <!ENTITY name      "borg">
 <!ENTITY author    "x-radeon">
-<!ENTITY version   "1.4.4">
-<!ENTITY sha256    "d48d3a31cf1f6fb781fe240945e0b1c246093d3b94b56ce8f501d46a8615f4de">
+<!ENTITY version   "1.4.5">
+<!ENTITY sha256    "1410e28609be3080d0e3ab27a78f5c586a29fd0c75c2aa6415fcde1293bcd923">
 <!ENTITY launch    "Settings/&name;">
 <!ENTITY plugdir   "/usr/local/emhttp/plugins/&name;">
 <!ENTITY plugin    "/boot/config/plugins/&name;">
@@ -13,6 +13,9 @@
 <PLUGIN name="&name;" author="&author;" version="&version;" launch="&launch;" pluginURL="&pluginURL;" min="7.2.0" support="tbd">
 
 <CHANGES>
+###2026-10-13
+- Borg Version 1.4.5 (https://github.com/borgbackup/borg/releases/tag/1.4.5)
+
 ###2026-03-31
 - Init Push
 - Borg Version 1.4.4 (https://github.com/borgbackup/borg/releases/tag/1.4.4)
